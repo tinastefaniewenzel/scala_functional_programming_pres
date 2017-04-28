@@ -1,0 +1,566 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+
+				<section id="fragments">
+
+						 <img src="test/examples/assets/lambda.png">
+
+				</section>
+
+				<section id="fragments">
+					<h2>Functional Programming in Scala</h2>
+					
+
+				</section>
+
+
+				<section id="fragments">
+					<h3>Programming paradigms</h3>
+					<ul class="circle">
+						<ul>
+							<ul>
+									<li class="fragment"> imperative programming</li>
+									<li class="fragment"> functional programming </li>
+									<li class="fragment"> OOP </li>
+							</ul>
+						</ul>
+					</ul>
+
+				</section>
+
+				<section data-background-transition="slide" 
+						 data-background="test/examples/assets/dotProduct.png"
+						 data-background-size="800px"
+						 id="fragments">
+
+				</section>
+
+
+				<section id="fragments">
+					<h3>Imperative Programming</h3>
+					<ul class="circle">
+						<ul>
+							<ul>
+									<li class="fragment"> using control structures, i.e. if-then-else, loops, breaks, continue, return, direct assignments</li>
+									<li class="fragment"> modifying mutable variables</li>
+									<li class="fragment"> conceptualising word by word </li>
+									<li class="fragment"> limitation: 
+										<ul class="circle">
+											<li class="fragment"> not scaling well ("Von Neumann" bottleneck)</li>
+										<ul>
+							</ul>
+						</ul>
+					</ul>
+
+						<aside class="notes">
+							<ul>
+								<li > data constantly transferred between memory and the processing unit. </li>
+								<li > it's wasteful in that a good percentage of the time, that information does not need to be transferred. </li>
+							</ul>
+						</aside>
+				</section>
+
+				<section id="fragments">
+					<h3>Imperative</h3>
+					<pre><code class="Scala" data-trim contenteditable>var name="Tina"
+
+var greeting = "Hi, I'm "
+println(greeting + name)
+
+==> "Hi, I'm Tina"
+					</code></pre>
+
+					<h3>Functional</h3>
+					<pre><code class="Scala" data-trim contenteditable>def greet( name:String ) = {
+      println(s"Hi, I'm $name")
+}
+
+greet("Tina")
+
+==> "Hi, I'm Tina"
+					</code></pre>
+
+				</section>
+
+				<section id="fragments">
+				<h3>Functional Programming</h3>
+					<ul class="circle">
+						<ul>
+							<ul>
+									<li class="fragment"> is all about state</li>
+
+							</ul>
+						</ul>
+					</ul>
+
+				</section>
+
+				<section id="fragments">
+
+						 <img src="test/examples/assets/door.png">
+
+				</section>
+
+				<section data-background-transition="slide" 
+						 data-background="test/examples/assets/door.png" 
+						 data-background-size="950px" data-state="dimbg"
+						 id="fragments">
+
+						 					<pre><code class="Scala" data-trim contenteditable>
+"Door.open = true"
+"Door.open = false"
+					</code></pre>
+
+				</section>
+
+
+				<section id="fragments">
+				<h3>Problems with state</h3>
+
+				<ul>
+						<li class="fragment"> race conditions</li>
+						<li class="fragment"> complexity</li>
+						<li class="fragment"> side effects</li>
+						<li class="fragment"> unpredictability</li>
+
+				</ul>
+				</section>
+
+				<section id="fragments">
+				<h3>Side effects</h3>
+				<pre><code class="Scala" data-trim contenteditable>var names=List("Jan","Kim","Sarah")
+
+def double_name(a:List[String])={
+  for (a <- names){
+    var names = a+a
+    println(names)
+  }
+}
+
+double_name(names)
+==> "JanJan KimKim SarahSarah"
+
+				</code></pre>
+
+				</section>
+
+
+
+				<section id="fragments">
+				<h3>Unpredicatabile results</h3>
+				<pre><code class="Scala" data-trim contenteditable>var a = 3
+a  ==> Int = 3
+
+def times_two(){
+  a=a^2
+}
+
+times_two()
+a  ==> Int = 1
+
+times_two()
+a  ==> Int = 3
+				</code></pre>
+
+				<p class="fragments">there's an obvious way to make this more predictable</p>
+
+				</section>
+
+				<section id="fragments">
+
+				<ul>
+						<li> This explains the problems with state</li>
+						<li> and why code with the least amount of state is often a good idea </li>
+
+				</ul>
+				</section>
+
+				<section data-background-transition="slide" 
+						 data-background="test/examples/assets/door.png" 
+						 data-background-size="950px" data-state="dimbg"
+						 id="fragments">
+
+				<pre><code class="Scala" data-trim contenteditable>
+"Door.open = true"
+"Door.open = false"
+				</code></pre>
+
+				</section>
+
+				<section id="fragments">
+				<p> Not Stateless</p>
+
+				<pre><code class="Scala" data-trim contenteditable>class Door(var name: String,
+           var open: Boolean) {
+  def open_door(newDoorState: Boolean): Unit =
+    open = newDoorState
+}
+
+var door = new Door("MyDoor",true)
+door.name // "MyDoor"
+door.open // true
+
+door.open_door(false)
+door.name // "MyDoor"
+door.open // false
+				
+				</code></pre>
+
+
+				</section>
+
+			<section id="fragments">
+				<h> Stateless</h>
+			<pre><code class="Scala" data-trim contenteditable>class Door{
+  var name="MyDoor"
+  var open_status=true
+  def this(name:String, open_status:Boolean){
+      this()
+      this.open_status = open_status
+  }
+
+  override def toString = {
+    "%s is open is %s.".format(name, open_status)
+  }
+}
+
+println(new Door)
+println(new Door("MyDoor",false))
+				</code></pre>
+
+				</section>
+
+			<section id="fragments">
+<h> Stateless</h>
+
+			<pre><code class="Scala" data-trim contenteditable>trait Status
+trait Open extends Status
+trait Closed extends Status
+trait Door[S <: Status]
+
+object Door {
+  def apply[S <: Status] = new Door[S] {}
+
+  def open[S <: Closed](d: Door[S]) = Door[Open]
+  def close[S <: Open](d: Door[S]) = Door[Closed]
+}
+
+val closedDoor = Door[Closed]
+val openDoor = Door.open(closedDoor)
+val closedAgainDoor = Door.close(openDoor)
+
+
+									</code></code></pre>
+<a href="http://gigiigig.github.io/tlp-step-by-step/phantom-types.html"> phantom-types</a>
+
+				</section>
+
+				<section id="fragments">
+				<h3>No state means</h3>
+
+				<ul>
+						<li> immutability </li>
+						<li> predictability y == f(x) </li>
+
+				</ul>
+				</section>
+</section>
+
+				<section id="fragments">
+				<h3>Functional Programming</h3>
+					<ul class="circle">
+						<ul>
+							<ul>
+									<li class="fragment"> Programming w/o imperative control structures: direct assignments, loops</li>
+									<li class="fragment"> in pure functional, everything is immutable</li>
+									<li class="fragment"> Functions are first class values: f(i/p): return(o/p)	</li>
+									<li class="fragment"> Lambda, Recursion, tail recursion</li>
+									<li class="fragment"> No side effects, easier to debug, bug-free applications</li>
+									<li class="fragment"> Concurrency/decomposability: Good for exploiting parallelism for multicore and cloud-computing</li>
+
+							</ul>
+						</ul>
+					</ul>
+
+				</section>
+
+				<section id="fragments"><small>
+				<pre><code class="Scala">// example 1
+class Person(var _first:String,var _last:String){
+
+  var age = 0
+
+  def first = _first
+  def first_=(value:String) {
+    println(s"First name was set to $value")
+    _first = value
+  }
+
+  def last = _last
+  def last_=(value:String) {
+    println(s"Last name was set to $value")
+    _last = value
+  }
+}
+
+val p = new Person("John","Smith")
+p.first // "John"
+p.last // "Smith"
+
+
+p.first_=("Christian")
+// ==> First name was set to Christian
+p.last="Sadilek"
+// ==> Last name was set to Sadilek
+									</code></pre></small>
+				</section>
+				<section data-background-transition="slide" 
+						 data-background="test/examples/assets/underscore.png" 
+						 data-background-size="1000px"
+						 id="fragments">
+				</section>
+
+
+				<section id="fragments">
+<p>Collections: Scala has mutable & immutable collections</p>
+				<small>
+				<pre><code class="Scala">// example 2
+val numbers = List(3, 10, 6, 8)
+numbers.map(number=>number*2)
+numbers.map(_*2) // same result
+
+def doubleIt(number: Int) = number*2
+numbers.map(doubleIt) // same result
+
+// using map
+numbers.map(_+ " is a number")
+
+// using foreach
+numbers.foreach(println)
+// foreach takes only function as argument - returns nothing
+numbers.foreach(_>4)
+numbers.filter(_>4)
+						</code></pre></small>
+	</section>
+
+					<section id="fragments">
+
+					<p>Collections continued</p>
+					<pre><code class="Scala">// using groupBy
+val strings = List("Donny","testing","test1")
+// group them based on property length
+
+val byLength = strings.groupBy(_.length)
+byLength(5)
+byLength(7)
+
+// group by first character
+val byChar = strings.groupBy(_.charAt(0))
+byChar('t')
+strings.exists(_.length>10)
+						</code></pre>
+						</section>
+
+
+					<section id="fragments">
+
+					<p>Mutable maps</p>
+					<pre><code class="Scala">val map = scala.collection.mutable.Map("a"->5,"b"->0)
+map("a")+=1
+map
+
+map("c")+=1 //Error
+map("c")
+
+val map = scala.collection.mutable.Map("a"->5,"b"->0)
+.withDefaultValue(0)
+map("c")+=1
+map("c")
+
+</code></pre>
+</section>
+
+
+<section id="fragments">
+<p>Maps on sequences</p>
+<pre><code class="Scala">val data = 1.to(12)
+
+def calculation(number:Int)={
+  println("calculating"+ number)
+  Thread.sleep(500)
+  number*2
+}
+
+val res = data.par.map(calculation)
+</code></pre>
+</section>
+
+<section id="fragments">
+
+<h3>Problem</h3>
+<small><p class="fragments" >Given a list of words, you want a list of Lists with all anagrams together. You can exclude short words.</p></small>
+<pre><code class="Scala">val words = List("kitchen","thicken","the","ababab",
+"testing","bababa")
+//expected result:List(
+//  List("kitchen","thicken"),
+//  List("testing"),
+//  List("ababab","bababa")
+//)
+</code></pre>
+</section>
+
+<section id="fragments">
+<h3>Problem</h3>
+<small><p class="fragments" >Given a list of words, you want a list of Lists with all anagrams together.</p></small>
+<pre><code class="Scala">val words = List("kitchen","thicken","the","ababab",
+"testing","bababa")
+//expected result:List(
+//  List("kitchen","thicken"),
+//  List("testing"),
+//  List("ababab","bababa")
+//)
+
+//Solution:
+words.filter(_.length>4).groupBy(_.sorted).values
+</code></pre>
+</section>
+
+<section id="fragments">
+<h3>Filter</h3>
+<pre><code class="Scala">var list = List[String]("a1.png","a2.amr","a3.png","a4.jpg","a5.jpeg","a6.mp4","a7.amr",
+"a9.mov","a10.wmv")
+//required output : List("a1.png","a3.png","a4.jpg","a5.jpeg")
+
+val extensions = List("jpg", "png")
+
+list.filter( p => extensions.exists(e => p.matches(s".*\\.$e$$")))
+list.filter(x => x.endsWith(".jpg") || x.endsWith(".png"))
+</code></pre>
+</section>
+
+<section id="fragments">
+<h3>Pattern matching</h3>
+<pre><code class="Scala">var test = List("some","cat")
+var words2 = "the cat sat".split(' ').toList
+var result = words2.filter(word => test.exists(item => item.contains(word)))
+// subset on List("some","cat") in ("the","cat","sat")
+
+println(result)
+</code></pre>
+</section>
+
+
+<section id="fragments">
+<h3>Pattern matching ctd.</h3>
+<pre><code class="Scala">val a = "Smith Adams Crawford"
+val names = a.split(" ").toList
+names(1)
+val people =List("Susan Specter","Edward Day","Billy Jean","Che Guevara","Lenhardt Peterson","Lauren Crawford","George Smith","Priscilla Adams")
+
+// subset on people with surnmame in names
+people.filter( name => name.contains(names(1)))
+people.filter(x => names.contains(x.split(" ").lastOption.getOrElse("")))
+  .foreach(println)
+// res0: List[String] = List(Lauren Crawford, George Smith, Priscilla Adams)
+</code></pre>
+</section>
+
+
+<section id="fragments">
+<h3>Pattern matching ctd.</h3>
+<pre><code class="Scala">// something is Scala regular expression
+val Something = """(\d+)(.*)""".r
+val Something(age4,name4)="123abc"
+
+"123abc" match{
+  case Something(age,name) => println(age)
+}
+</code></pre>
+</section>
+
+
+<section id="fragments">
+<h3>Option and use of null</h3>
+<small>
+<pre><code class="Scala">case class Person(age:Int)
+
+val person = Option(Person(100))
+val age2 = person.map(_.age+5)
+age2.getOrElse(0)
+
+val person2: Option[Person] = Option(null)
+val age3 = person2.map(_.age+5)
+age3.getOrElse(0)
+
+def doStuff(p: Option[Person]) =p match{
+  case Some(person) => println("here is "+ person)
+  case None => println("no person")
+}
+
+doStuff(person)
+doStuff(person2)
+</code></pre></small>
+</section>
+
+<section data-background-transition="slide" 
+						 data-background="test/examples/assets/dotProduct.png"
+						 data-background-size="600px"
+						 id="fragments">
+
+</section>
+
+<section data-background-transition="slide" 
+						 data-background="test/examples/assets/recursion2.png"
+						 data-background-size="500px"
+						 id="fragments">
+
+</section>
+
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+			        // { src: 'plugin/math/math.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
